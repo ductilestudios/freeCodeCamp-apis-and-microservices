@@ -1,6 +1,8 @@
 require('dotenv').config()
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
+
 
 console.log('Hello World');
 
@@ -10,6 +12,8 @@ app.use(function (req, res, next) {
     console.log(req.method + " " + req.path + " - " + req.ip);
     next()
   })
+  
+app.use('/name', bodyParser.urlencoded({extended: false}));
 
 app.get('/', function(req, res) {
     let absolutePath = __dirname + '/views/index.html';
@@ -24,10 +28,24 @@ app.get('/json', function(req, res) {
     }
 })
 
+app.get('/now', function(req, res, next) {
+    req.time = new Date().toString();
+    next();
+}, function(req, res) {
+    res.json({"time": req.time})
+})
 
+app.get('/:param/echo', function (req, res) {
+    res.json({"echo": req.params.param});
+})
 
-
-
+app.route('/name')
+    .get(function (req, res) {
+        res.json({"name": req.query.first + " " + req.query.last});
+    })
+    .post(function (req, res) {
+        res.json({"name": req.body.first + " " + req.body.last});
+    }) 
 
 
 
