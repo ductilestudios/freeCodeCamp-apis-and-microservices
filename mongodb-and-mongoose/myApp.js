@@ -59,7 +59,7 @@ const findOneByFood = (food, done) => {
 const findPersonById = (personId, done) => {
   Person.findById({_id: personId}, function(err, data) {
     if (err) return console.error(err);
-    console.log(`${personId} found!`);
+    console.log(`Person with Id:${personId} found!`);
     done(null , data);
   });  
 };
@@ -68,7 +68,7 @@ const findEditThenSave = (personId, done) => {
   const foodToAdd = "hamburger";
   Person.findById({_id: personId}, function(err, data) {
     if (err) return console.error(err);
-    console.log(`${personId} found!`);
+    console.log(`Person with Id:${personId} found!`);
     data.favoriteFoods.push(foodToAdd);
     data.save(function(err, newData) {
       if (err) return console.error(err);
@@ -80,24 +80,40 @@ const findEditThenSave = (personId, done) => {
 
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
-
-  done(null /*, data*/);
+  Person.findOneAndUpdate({name: personName}, {age: "20"}, { new: true }, function (err, data) {
+    if (err) return console.error(err);
+    console.log(`${personName} found! and age changed to ${ageToSet}`);
+    done(null , data);
+  })
 };
 
 const removeById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findOneAndRemove({_id: personId}, function (err, data) {
+    if (err) return console.error(err);
+    console.log(`Person with Id: ${personId} found and Removed!`);
+    done(null , data);
+  })
 };
 
 const removeManyPeople = (done) => {
   const nameToRemove = "Mary";
-
-  done(null /*, data*/);
+  Person.remove({name: nameToRemove}, function(err, data) {
+    if (err) return console.error(err);
+    console.log(`${nameToRemove} removed!`);
+    done(null , data);
+  });
 };
 
 const queryChain = (done) => {
   const foodToSearch = "burrito";
-
-  done(null /*, data*/);
+  Person.find({favoriteFoods: foodToSearch})
+    .sort('name')
+    .limit(2)
+    .select('-age')
+    .exec(function(err, data) {
+      if (err) return console.error(err);
+      done(err , data);
+    })
 };
 
 /** **Well Done !!**
